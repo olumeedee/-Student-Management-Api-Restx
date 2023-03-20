@@ -1,16 +1,15 @@
 from ..utils import db
-from .students import Student
-from .courses import Course
-
-class StudentCourse(db.Model):
-    __tablename__ = 'student_course'
-    id = db.Column(db.Integer(), primary_key=True)
-    student_id = db.Column(db.Integer(), db.ForeignKey('students.id'))
-    course_id = db.Column(db.Integer(), db.ForeignKey('courses.id'))
+class Course(db.Model):
+    __tablename__ = 'courses'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    course_id = db.Column(db.String(20), unique=True, nullable=False)
+    teacher = db.Column(db.String(50), nullable=False)
+    enrollments = db.relationship('CourseEnrollment', backref='course', lazy=True)
 
     def __repr__(self):
-        return f"<Student Course {self.id}>"
-        
+        return f"<Course {self.name}>"
+    
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -26,12 +25,4 @@ class StudentCourse(db.Model):
     def get_by_id(cls, id):
         return cls.query.get_or_404(id)
     
-    @classmethod
-    def get_courses_by_student(cls, student_id):
-        courses = Course.query.join(StudentCourse).join(Student).filter(Student.id == student_id).all()
-        return courses
-    
-    @classmethod
-    def get_students_in_course(cls, course_id):
-        students = Student.query.join(StudentCourse).join(Course).filter(Course.id == course_id).all()
-        return students
+
