@@ -1,10 +1,14 @@
 from flask import Flask
 from flask_restx import Api
 from .auth.views import auth_namespace
-from .courses.views import courses_namespace
+from .students.views import student_namespace
 from .config.config import config_dict
 from .utils import db
 from .models.users import User
+from .models.student import Student
+from .models.courses import Courses
+from .models.enrollment import Enrollment
+from .models.admin import Admin
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from werkzeug.exceptions import NotFound, MethodNotAllowed
@@ -23,7 +27,7 @@ def create_app(config=config_dict['dev']):
 
     api = Api(app)
     api.add_namespace(auth_namespace, path='/auth')
-    api.add_namespace(order_namespace, path='/ courses')
+    api.add_namespace(student_namespace, path='/students')
     
     
     @api.errorhandler(NotFound)
@@ -42,7 +46,10 @@ def create_app(config=config_dict['dev']):
         return {
             'db': db,
             'User': User,
-            'Order': Order
+            'Student': Student,
+            'Courses': Courses,
+            'Enrollment': Enrollment,
+            'Admin': Admin,
         }
 
     

@@ -3,6 +3,8 @@ from ..utils import db
 
 class Student(User):
     __tablename__ = 'students'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.String(20), unique=True, nullable=False)
     enrollments = db.relationship('CourseEnrollment', backref='student', lazy=True)
 
     def __repr__(self):

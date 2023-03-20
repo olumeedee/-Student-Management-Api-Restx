@@ -4,12 +4,12 @@ from functools import wraps
 from http import HTTPStatus
 
 # Get the authorized user type
-# def get_user_type(id:int):
-#     user = User.query.filter_by(id=id).first()
-#     if user:
-#         return user.user_type
-#     else:
-#         return None
+def get_user_type(id:int):
+    user = User.query.filter_by(id=id).first()
+    if user:
+        return user.user_type
+    else:
+        return None
 
 # Custom decorator to verify admin access
 def admin_required():
