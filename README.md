@@ -1,5 +1,5 @@
 # Student-Management-Api-Restx
-<p style="font-size:20px;">The Student Management API is a RESTful API that allows you to manage students, courses, and enrollments. It's built with Flask and Flask-RESTful and can be accessed through the following endpoint you will be getting below the intro</p>
+<p style="font-size:20px;">The Student Management API is a RESTful API that allows you to manage students, courses, and enrollments. It's built with Flask and Flask-RESTx. The active site is deployed at the following address https://olu-student-management-api.herokuapp.com/</p>
 
 <div></div>
 
