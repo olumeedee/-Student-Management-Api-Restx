@@ -1,16 +1,16 @@
 from ..utils import db
+from .students import Student
+from .courses import Course
 
 class Enrollment(db.Model):
-    __tablename__ = 'enrollment'
-    id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
-    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-    percent_grade = db.Column(db.Float(), nullable=False)
-    letter_grade = db.Column(db.String(5), nullable=True)
+    __tablename__ = 'Enrollment'
+    id = db.Column(db.Integer(), primary_key=True)
+    student_id = db.Column(db.Integer(), db.ForeignKey('students.id'))
+    course_id = db.Column(db.Integer(), db.ForeignKey('courses.id'))
 
     def __repr__(self):
-        return f"<{self.percent_grade}%>"
-    
+        return f"<Enrollment {self.id}>"
+        
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -25,4 +25,13 @@ class Enrollment(db.Model):
     @classmethod
     def get_by_id(cls, id):
         return cls.query.get_or_404(id)
-
+    
+    @classmethod
+    def get_courses_by_student(cls, student_id):
+        courses = Course.query.join(Enrollment).join(Student).filter(Student.id == student_id).all()
+        return courses
+    
+    @classmethod
+    def get_students_in_course(cls, course_id):
+        students = Student.query.join(Enrollment).join(Course).filter(Course.id == course_id).all()
+        return students
