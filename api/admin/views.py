@@ -2,8 +2,9 @@ from flask_restx import Namespace, Resource, fields
 from ..models.admin import Admin
 from ..utils.decorators import admin_required
 from http import HTTPStatus
-from flask_jwt_extended import get_jwt_identity
-from werkzeug.security import generate_password_hash
+from flask_jwt_extended import get_jwt_identity, create_access_token, create_refresh_token
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 
 admin_namespace = Namespace('admin', description='Namespace for Administrators')
@@ -25,6 +26,10 @@ admin_model = admin_namespace.model(
     }
 )
 
+admin_login_model = admin_namespace.model('Login_Admin', {
+    'email': fields.String(required=True),
+    'password': fields.String(required=True)
+})
 
 @admin_namespace.route('')
 class GetAllAdmins(Resource):
@@ -44,7 +49,7 @@ class GetAllAdmins(Resource):
 class AdminRegistration(Resource):
           
         @admin_namespace.expect(admin_signup_model)
-        @admin_required()
+        
         def post(self):
             """
             Register an Admin - Admins Only, after First Admin
@@ -73,21 +78,28 @@ class AdminRegistration(Resource):
 #             @admin_namespace.expect(admin_signup_model)
 #             def post(self):
 #                 """
-#                 Admin Login
-#                     return {"message": "Invalid Credentials"}
-        
-#                 access_token = admin.encode_token(admin.id)
-#                 return {"message": "Login Successful", "access_token": access_token}, HTTPStatus.OK
-      
-#                 """
-#                 data = admin_namespace.payload
-        
-#                 admin = Admin.query.filter_by(email=data['email']).first()
-#                 if not admin:
-#                     return {"message": "Admin Account Does Not Exist"}
-        
-#                 if not admin.check_password(data['password']):
-#                     return {"message": "Invalid Credentials"}
+
+admin_namespace.route('/login')
+class AdminLogin(Resource):
+    @admin_namespace.expect(admin_login_model)
+    def post(self):
+        '''
+            Authenticate Login for admin
+        '''
+        data = admin_namespace.payload
+        email = data['email']
+        user = Admin.query.filter_by(email=email).first()
+
+        if (user is not None) and check_password_hash(user.password, data['password']):
+            access_token = create_access_token(identity=email)
+            refresh_token = create_refresh_token(identity=email)
+            response = {
+                'create_access_token': access_token,
+                'create_refresh_token': refresh_token,
+                'type': 'admin'
+            }
+
+            return response, HTTPStatus.CREATED
                 
 @admin_namespace.route('/<int:admin_id>')
 class GetUpdateDeleteAdmins(Resource):
