@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_restx import Api
-# from dotenv import load_dotenv
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from werkzeug.exceptions import NotFound, MethodNotAllowed
@@ -11,7 +10,6 @@ from .courses.views import course_namespace
 from .students.views import student_namespace
 from .config.config import config_dict
 from .utils import db
-# from .utils.blacklist import BLACKLIST
 from .models.users import User
 from .models.admin import Admin
 from .models.grades import Grade
@@ -23,7 +21,7 @@ from .models.enrollment import Enrollment
 def create_app(config=config_dict['dev']):
     app = Flask(__name__)
 
-    # load_dotenv()
+
 
     app.config.from_object(config)
 
@@ -33,16 +31,7 @@ def create_app(config=config_dict['dev']):
 
     jwt = JWTManager(app)
 
-    # @jwt.token_in_blocklist_loader
-    # def check_if_token_in_blacklist(jwt_header, jwt_payload):
-    #     return jwt_payload['jti'] in BLACKLIST
     
-    # @jwt.revoked_token_loader
-    # def revoked_token_callback(jwt_header, jwt_payload):
-    #     return {
-    #         "message": "The token has been revoked",
-    #         "error": "token_revoked"
-    #     }, HTTPStatus.UNAUTHORIZED
     
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):
